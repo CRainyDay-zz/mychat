@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/my_title_tv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F2F2F8"
+        android:gravity="center_horizontal|center_vertical"
+        android:text="在线聊天"
+        android:textColor="@color/green0"
+        android:textSize="28sp" />
+</LinearLayout>
