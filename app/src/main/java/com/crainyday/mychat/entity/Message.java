@@ -2,11 +2,10 @@ package com.crainyday.mychat.entity;
 
 import android.graphics.Bitmap;
 
-public class Message {
-    // 标识是一条接收的消息
-    public static final int TYPE_RECEIVED = 0;
-    // 标识一条发送的消息
-    public static final int TYPE_SEND = 1;
+import java.io.Serializable;
+
+public class Message  implements Serializable {
+    private static final long serialVersionUID = 1L;
     private boolean isMine = false;
 
     private String sender;

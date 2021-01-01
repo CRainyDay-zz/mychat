@@ -71,7 +71,7 @@
             android:layout_marginLeft="100dp"
             android:layout_marginTop="10dp"
             android:gravity="center_vertical"
-            android:text="20171222030"
+            android:text="20171222"
             android:textSize="18sp" />
 
         <EditText

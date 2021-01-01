@@ -81,7 +81,8 @@ public class RefreshService extends Service {
             BufferedReader reader = null;
 
             try {
-                long expires_in = 590;
+                // 这里注意, 后台返回的过期时间单位是s
+                long expires_in = 540;
 //                long expires_in = 9;
 
                 while (running){
@@ -121,7 +122,8 @@ public class RefreshService extends Service {
 
                         if("0".equals(error)){
                             newToken = response.getString("token");
-                            expires_in = Long.parseLong(response.getString("expres_in"));
+                            // 这里注意, 后台返回的过期时间单位是s
+                            expires_in = Long.parseLong(response.getString("expres_in")) - 60;
                         }else {
                             newToken = null;
                         }

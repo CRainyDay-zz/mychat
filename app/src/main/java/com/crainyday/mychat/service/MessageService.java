@@ -98,13 +98,11 @@ public class MessageService extends Service {
             URL url = null;
             HttpURLConnection connection = null;
             BufferedReader reader = null;
-
             try {
-                String api = "http://android.dulix.cn/getmsglist?client_id="+ username + "&token=" + token+"&type="+type+"&target_id="+target_id;
-                url = new URL(api);
 
                 while (running){
-
+                    String api = "http://android.dulix.cn/getmsglist?client_id="+ username + "&token=" + token+"&type="+type+"&target_id="+target_id;
+                    url = new URL(api);
                     // 2.建立一个http的连接
                     connection = (HttpURLConnection) url.openConnection();
                     // 3.设置一些请求的参数
@@ -170,7 +168,9 @@ public class MessageService extends Service {
                         }else if ("101".equals(error)){
                             // tokenFlag 过期
                             tokenFlag = 1;
+                            running = false;
                         }else if("102".equals(error)){
+                            // 暂无聊天记录
                             recordIsNull = 1;
                         }
                     }

@@ -132,11 +132,8 @@ public class ChatActivity extends AppCompatActivity {
                 String contents = inputText.getText().toString().trim();
                 if(!"".equals(contents)){
                     Message message = new Message(true, username, username, "", contents, "text", new Date().toString(), null);
-                    msgList.add(message);
                     // 发送消息
-                    sendMsg(username, token,type, target_id, contents, "text");
-                    adapter.notifyItemInserted(msgList.size() - 1);
-                    recyclerView.scrollToPosition(msgList.size() - 1);
+                    sendMsg(username, token,type, target_id, message);
                     inputText.setText("");
                 }
             }
@@ -184,6 +181,7 @@ public class ChatActivity extends AppCompatActivity {
                         ++ recordIsNull;
                         publishProgress();
                     }else if(downloadBinder.getTokenFlag() == 1){
+                        // token 过期
                         isLawfulToken = false;
                         publishProgress();
                     }else if(first == 1&&downloadBinder.getMsgFlag()==0){
@@ -192,10 +190,8 @@ public class ChatActivity extends AppCompatActivity {
                         msgList.addAll(downloadBinder.getUpdateList());
                         downloadBinder.setNewMsg(0);
                         downloadBinder.setMsgFlag(0);
-                        if(msgList.size()>0){
-                            publishProgress();
-                            first = 0;
-                        }
+                        publishProgress();
+                        first = 0;
                     }else if(downloadBinder.getNewMsg() == 1&&downloadBinder.getMsgFlag()==0){
                         // 有新消息
                         downloadBinder.setMsgFlag(1);
@@ -258,22 +254,18 @@ public class ChatActivity extends AppCompatActivity {
             matrix.postScale(scaleWidth, scaleHeight);
             Bitmap mBitmap = Bitmap.createBitmap(bitmap, 0, 0,width,height,matrix, true);
             String result = ImageUtil.BitmapToBase64(mBitmap);
-            Message message = new Message(true, username, username, "", "","image","", mBitmap);
-            msgList.add(message);
-            adapter.notifyDataSetChanged();
-            recyclerView.scrollToPosition(msgList.size()-1);
+            Message message = new Message(true, username, username, "", result,"image","", mBitmap);
             // 发送图片到服务器
-
-            sendMsg(username, token, type, target_id, result, "image");
+            sendMsg(username, token, type, target_id, message);
 
         }
     }
-    private void sendMsg(final String clientId, final String token, final String type, final String target_id, final String contents, final String contentsType){
+    private void sendMsg(final String clientId, final String token, final String type, final String target_id, final Message message){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String data = "client_id="+clientId+"&token="+token+"&type="+type
-                        +"&target_id="+target_id+"&contents="+contents+"&contentsType=" + contentsType;
+                        +"&target_id="+target_id+"&contents="+message.getContents()+"&contentsType=" + message.getContentsType();
                 try {
                     String response = HTTPUtil.POST("sendmsg", data);
                     if(response!=null){
@@ -281,6 +273,7 @@ public class ChatActivity extends AppCompatActivity {
                         msg.what = 2;
                         Bundle bundle = new Bundle();
                         bundle.putString("response", response);
+                        bundle.putSerializable("message", message);
                         msg.setData(bundle);
                         handler.sendMessage(msg);
                     }
@@ -324,19 +317,26 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         public void handleMessage(android.os.Message msg) {
             if (msg.what == 2){
+                // 处理发送消息返回的数据
                 String response = msg.getData().getString("response");
                 try{
                     JSONObject json = new JSONObject(response);
                     if(json.getString("code").equals("0")){
                         String resultId = json.getString("resultid");
-                        Message lastMsg = msgList.get(msgList.size()-1);
-                        lastMsg.setRecordGuid(resultId);
+                        Message message =(Message)msg.getData().getSerializable("message");
+                        message.setRecordGuid(resultId);
+                        msgList.add(message);
+                        adapter.notifyItemInserted(msgList.size()-1);
+                        recyclerView.scrollToPosition(msgList.size()-1);
+                    }else{
+                        Toast.makeText(getApplicationContext(), "发送失败, 请重试", Toast.LENGTH_LONG).show();
                     }
 
                 }catch (Exception e){
                     e.printStackTrace();
                 }
             }else if(msg.what==3){
+                // 处理撤回消息返回的数据
                 String response = msg.getData().getString("response");
                 int position = msg.getData().getInt("position");
 

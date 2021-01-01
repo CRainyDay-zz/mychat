@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean running = false;
 
     private TextView my_title_bar;
-    private RelativeLayout main_body;
     private TextView bottom_bar_text_1;
     private TextView bottom_bar_text_2;
     private TextView bottom_bar_text_3;
@@ -40,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView bottom_bar_image_2;
     private ImageView bottom_bar_image_3;
 
-    private LinearLayout main_body_bar;
     private RelativeLayout bottom_bar_1_btn;
     private RelativeLayout bottom_bar_2_btn;
     private RelativeLayout bottom_bar_3_btn;
@@ -136,14 +134,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-    private android.os.Handler handler = null;
-    public void setHandler(android.os.Handler handler) {
-        this.handler = handler;
-    }
+
     private void initView() {
 
         my_title_bar = findViewById(R.id.my_title_tv);
-        main_body = findViewById(R.id.main_body);
         bottom_bar_text_1 = findViewById(R.id.bottom_bar_text_1);
         bottom_bar_text_2 = findViewById(R.id.bottom_bar_text_2);
         bottom_bar_text_3 = findViewById(R.id.bottom_bar_text_3);
@@ -151,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bottom_bar_image_2 = findViewById(R.id.bottom_bar_image_2);
         bottom_bar_image_3 = findViewById(R.id.bottom_bar_image_3);
 
-        main_body_bar = findViewById(R.id.main_body_bar);
         bottom_bar_1_btn = findViewById(R.id.bottom_bar_1_btn);
         bottom_bar_2_btn = findViewById(R.id.bottom_bar_2_btn);
         bottom_bar_3_btn = findViewById(R.id.bottom_bar_3_btn);
@@ -159,6 +152,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bottom_bar_1_btn.setOnClickListener(this);
         bottom_bar_2_btn.setOnClickListener(this);
         bottom_bar_3_btn.setOnClickListener(this);
+    }
+
+    private android.os.Handler handler = null;
+    public void setHandler(android.os.Handler handler) {
+        this.handler = handler;
     }
 
     private class RefreshTask extends AsyncTask<String, Integer, String> {
@@ -171,7 +169,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protected String doInBackground(String... strings) {
             while (running){
                 try {
-                    Thread.sleep(300000);
+                    // 每 3m 查询一下, token 是否过期
+                    Thread.sleep(180000);
 //                    Thread.sleep(3000);
 
                     if(refreshBinder.isNewToken()){
